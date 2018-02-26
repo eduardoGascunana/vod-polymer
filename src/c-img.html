@@ -1,0 +1,38 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<dom-module id="c-img">
+    <template>
+        <style>
+            img {
+                max-width: 100%;
+                height: auto;
+            }
+        </style>
+        <img id="idImg">
+    </template>
+    <script>
+        "use strict";
+        Polymer({
+            is: "c-img",
+            properties: {
+                data: {
+                    type: Object,
+                    observer: "_srcChanged",
+                    notify: false,
+                    readOnly: false
+                },
+            },
+            listeners: {
+                "idImg.error": "_onErrorImg"
+            },
+            _srcChanged: function (item) {
+                this.$.idImg.removeAttribute("src");
+                if (item) {
+                this.$.idImg.src = this.rootPath + "images/" + item.cover;
+                }
+            },
+            _onErrorImg: function () {
+                this.$.idImg.src = this.rootPath + "images/default.jpg";
+            }
+        });
+    </script>
+</dom-module>

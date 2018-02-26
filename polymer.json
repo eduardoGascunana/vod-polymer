@@ -1,0 +1,39 @@
+{
+    "entrypoint": "index.html",
+    "shell": "src/c-main.html",
+    "fragments": [
+        "src/c-view-home.html",
+        "src/c-view-list.html",
+        "src/c-view-detail.html",
+        "src/c-view-cart.html"
+    ],
+    "sources": [
+        "service-worker.js",
+        "src/*",
+        "images/*",
+        "data/*",
+        "icons/*",
+        "bower.json"
+    ],
+    "extraDependencies": [
+        "manifest.json",
+        "bower_components/webcomponentsjs/webcomponents-lite.min.js"
+    ],
+    "builds": [
+        {
+            "name": "vod-polymer",
+            "basePath": true,
+            "js": {
+                "minify": true,
+                "compile": true
+            },
+            "css": {
+                "minify": true
+            },
+            "html": {
+                "minify": true
+            },
+            "addPushManifest": true
+        }
+    ]
+}

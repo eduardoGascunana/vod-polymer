@@ -1,0 +1,80 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<dom-module id="c-model-categories">
+	<template>
+	  	<iron-ajax
+			url=[[url]]
+			auto
+			handle-as="json"
+			last-response="{{categories}}">
+	  	</iron-ajax>
+	</template>
+	<script>
+		"use strict"; 
+		Polymer({
+			is: "c-model-categories",
+			properties: {
+				url: String,
+				categories: {
+					type: Array, 
+					notify: true,
+					readOnly: false                        
+				},
+                isOffline: {
+                    type: Boolean,
+                    observer: "_retryRequest",
+                    notify: false,
+                    readOnly: false
+				},	
+				serviceWorkerActivated: {
+					type: Boolean,
+					observer: "_serviceActive",
+					notify: false,
+					readOnly: false
+                }/* ,
+                id: {
+                    type: String,
+                    observer: "_getNameCategory",
+                    notify: false,
+                    readOnly: false                    
+                },
+                category: {
+                    type: String,
+                    notify: true,
+                    readOnly: false                      
+                } */			
+			},
+			_retryRequest: function (newValue, oldValue) {
+                if (!newValue && oldValue) {
+                    this._analyzeRequest();                    
+                }
+			},
+			_serviceActive: function (newValue, oldValue) {
+                if (newValue && !oldValue) {
+					this._analyzeRequest();
+				}
+			},
+			getNameCategory: function (id) {
+				return this.categories.find(function (item) {
+					return id === item.id;
+				}).name || "";				
+			},
+			_analyzeRequest: function() {
+				var target = this.rootPath + "data/Genres.json";
+        		if (navigator.onLine) {	
+					this.url = target;
+				} else if ("caches" in window) {
+					caches.match(target).then(function (response) {
+						if (response) {
+							response.json().then(function (data) {
+								this.categories = data;
+							}.bind(this));
+						} else {
+							this.categories = [];
+						}
+					}.bind(this))
+				}
+			}
+		});
+	</script>
+</dom-module>

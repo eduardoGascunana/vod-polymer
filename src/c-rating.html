@@ -1,0 +1,80 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<dom-module id="c-rating">
+    <template>
+        <style>
+            :host {
+                --path-stars: "";
+            }
+            .rating {
+                overflow: hidden;
+                display: inline-block;
+            }
+            .rating-star {        
+                display: block;
+                float: right;        
+                width: 16px;
+                height: 16px;
+                background: var(--path-stars) 0 -16px;
+            }
+            .rating-star.star-active, 
+            .rating-star.star-active ~ .rating-star {
+                background-position: 0 0;
+            }
+        </style>
+        <div id="idStars" class="rating">
+            <div id="idStar5" class="rating-star" data-rate="5"></div>
+            <div id="idStar4" class="rating-star" data-rate="4"></div>
+            <div id="idStar3" class="rating-star" data-rate="3"></div>
+            <div id="idStar2" class="rating-star" data-rate="2"></div>
+            <div id="idStar1" class="rating-star" data-rate="1"></div>
+        </div>
+    </template>
+    <script>
+        "use strict";
+        Polymer({
+            is: "c-rating",
+            properties: {
+                rate: {
+                    type: Number,
+                    observer: "_setStars",
+                    notify: true,
+                    readOnly: false
+                }
+            },
+            listeners: {
+                "idStars.tap": "_onTapStars",
+                "idStars.mouseover": "_onMouseOverStars",
+                "idStars.mouseleave": "_onMouseLeaveStars"
+            },
+            _setStars: function (rate) {   
+                if (rate === undefined) {
+                    return;
+                }                
+                var nodes = this.$$(".star-active");
+                if (nodes){
+                    nodes.classList.remove("star-active")
+                }
+                this.$$("#idStar" + rate).className += " star-active";
+            },
+            _onTapStars: function (ev) {
+                this.rate = ev.target.dataset.rate;
+                ev.stopPropagation();
+            },
+            _onMouseOverStars: function (ev) {
+                if (ev.target !== ev.currentTarget) {
+                    this.$$(".star-active").classList.remove("star-active");
+                    ev.target.className += " star-active";
+                }
+                ev.stopPropagation();
+            },
+            _onMouseLeaveStars: function (ev) {
+                this._setStars(this.rate);
+                ev.stopPropagation();
+            },
+            ready: function () {
+                this.customStyle["--path-stars"] = "url('" + this.rootPath + "images/star.png')"
+                this.updateStyles();
+            }
+        });
+    </script>
+</dom-module>

@@ -1,0 +1,181 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
+<link rel="import" href="c-model-categories.html">
+<dom-module id="c-model-data">
+    <template>
+        <c-model-categories
+            id="idModelCategories">
+        </c-model-categories>
+        <iron-localstorage 
+            name="c-model-data" 
+            value="{{listRateModified}}" 
+            on-iron-localstorage-load-empty="_onIronLocalStorageLoadEmpty">
+        </iron-localstorage>
+        <iron-ajax
+            url="[[url]]"
+            auto
+            handle-as="json"
+            on-response="_onResponse">
+        </iron-ajax>   
+    </template>
+    <script>
+        "use strict";
+        Polymer({
+            is: "c-model-data",
+            properties: {
+                categories: {
+                    type: Array,                      
+                    notify: false,
+                    readOnly: false                        
+                },
+                category: {
+                    type: String,
+                    observer: "_analyzeRequest",
+                    notify: false,
+                    readOnly: false
+                },
+                listHome: {
+                    type: Array,
+                    notify: true,
+                    readOnly: false                    
+                },
+                listByCategory: {
+                    type: Array,
+                    notify: true,
+                    readOnly: false
+                },
+                url: String,
+                idItem: {
+                    type: String,
+                    observer: "_getDataItem",
+                    notify: false,
+                    readOnly: false
+                },
+                dataItem: {
+                    type: Object,
+                    notify: true,
+                    readOnly: false                        
+                },
+                dataCart: {
+                    type: Array,
+                    notify: false,
+                    readOnly: false
+                },
+                loadingCategory: {
+                    type: Boolean,
+                    value: false,
+                    notify: true,
+                    readOnly: false
+                },
+                isOffline: {
+                    type: Boolean,
+                    observer: "_retryRequest",
+                    notify: false,
+                    readOnly: false
+                },
+                listRateModified: {
+                    type: Array,
+                    value: function () {
+                        return [];
+                    },
+                    notify: false,
+                    readOnly: false
+                }
+            },
+            _onIronLocalStorageLoadEmpty: function () {
+                this.set("listRateModified", []);
+            }, 
+            _getDataItem: function () {
+                var info = this.listByCategory.find(function (cover) {
+                    return cover.id === this.idItem;
+                }.bind(this));
+                info.genre = this.categories.find(function (category) {
+                    return info.idGenre === category.id;
+                }).name;              
+                this.dataItem = info;
+            },
+            _retryRequest: function (newValue, oldValue) {
+                if (!newValue && oldValue) {
+                    this._analyzeRequest(this.category);                    
+                }
+            },
+            _analyzeRequest: function (value) {
+                this.dataItem = null;                    
+                this.category = value;
+                if (!this.isOffline) {
+                    if (this.url !== this.setUrl(value)) {
+                        this.loadingCategory = true;
+                    }
+                    this.url = this.setUrl(value);
+                } else if ("caches" in window) {
+                    caches.match(this.setUrl(value)).then(function (response) {      
+                        if (response) {
+                            response.json().then(function (data) {
+                                this._onResponse({
+                                    detail: {
+                                        response: data
+                                    }
+                                })
+                            }.bind(this));
+                        } else {                            
+                            this._onResponse({
+                                detail: {
+                                    response: []
+                                }
+                            });
+                        }
+                    }.bind(this))
+                }                        
+            },
+            _onResponse: function (data) {        
+                if (this.category === "Home") {
+                    this.listHome = data.detail.response;
+                } else {
+                    data.detail.response.forEach(function (item) {
+                        item.nameCategory = this.category;
+                    }.bind(this));
+                    this.listByCategory = data.detail.response; 
+                    this.listByCategory.forEach(function (item) {
+                        item.isAddCart = this.dataCart.some(function (data) {
+                            return data.id === item.id;
+                        });
+                        item.rate = this.getRateStoraged(item.id) || item.rate;
+                    }.bind(this));  
+                }   
+                this.loadingCategory = false;             
+            },
+            setUrl: function (category) {
+                return this.rootPath + "data/" + category + ".json";
+            },  
+            modifyRate: function (item) {
+                var pos = this.listByCategory.findIndex(function (cover) {
+                    return cover.id === item.idItem;
+                });                    
+                this.set(["listByCategory", pos, "rate"], item.rate);
+                this.set(["dataItem", "rate"], item.rate);
+                var pos = this.listRateModified.findIndex(function (info) {
+                    return item.idItem === info.id
+                });
+                var data = {
+                    id: item.idItem,
+                    rate: item.rate                        
+                };
+                this.splice("listRateModified", pos === -1 ? this.listRateModified.length : pos, 1, data);
+            },
+            setItemCart: function (item, isAddCart) {                
+                var pos = this.listByCategory.findIndex(function (cover) {
+                    return cover.id === item.id;
+                });            
+                this.set(["listByCategory", pos, "isAddCart"], isAddCart ? true : false);
+                this.set(["dataItem", "isAddCart"], isAddCart ? true : false);
+            },
+            getRateStoraged: function(id) {
+                var data = this.listRateModified.find(function (item) {
+                    return item.id === id;
+                });
+                return data ? data.rate : null;
+            }
+        });
+    </script>
+</dom-module>

@@ -1,0 +1,62 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
+<dom-module id="c-model-cart">
+    <template>
+        <iron-localstorage 
+            name="c-model-cart" 
+            value="{{dataCart}}" 
+            on-iron-localstorage-load-empty="_onIronLocalStorageLoadEmpty">
+        </iron-localstorage>
+    </template>
+    <script>
+        "use strict";
+        Polymer({
+            is: "c-model-cart",
+            hostAttributes: {
+                hidden: true
+            },
+            properties: {
+                dataCart: {
+                    type: Array,
+                    notify: true,
+                    readOnly: false
+                },
+                total: {
+                    type: Number,
+                    computed: "_calculateTotalPrice(dataCart.splices)",
+                    notify: true
+                }
+            },
+            _onIronLocalStorageLoadEmpty: function () {
+                this.set("dataCart", []);
+            }, 
+            add: function (item) {
+                if (!item) {
+                    return;
+                }
+                this.splice("dataCart", this.dataCart.length, 1, item);
+            },  
+            delete: function( name ) {
+                if (!name) {
+                    this.splice("dataCart", 0, this.dataCart.length);
+                } else {
+                    var i = this.dataCart.findIndex(function(cover) {
+                        return cover.name === name;
+                    });
+                    if (i > -1) {
+                        this.splice("dataCart", i, 1);
+                    }
+                }
+            },
+            _calculateTotalPrice: function () {
+                var acum = 0;
+                if (this.dataCart) {
+                    this.dataCart.forEach( function( item ) {
+                        return acum += Number( item.price );
+                    });
+                }
+                return acum;                    
+            }                
+        });
+    </script>
+</dom-module>

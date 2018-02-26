@@ -1,0 +1,189 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="c-cart-item.html">
+<link rel="import" href="c-modal.html">
+<dom-module id="c-view-cart">
+    <template>
+        <style>  
+            .cart {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+            .cart-header {
+                font-size: 18px;
+                font-weight: bold;
+                text-align: center;
+                padding-top: 15px;  
+            }
+            .cart-num-elements {    
+                text-align: center;
+                font-size: 16px;
+            }
+            .cart-list {
+                margin: 0 auto;
+                padding: 10px;
+                width: 100%;
+                display: flex;  
+                flex-wrap: wrap;     
+                justify-content: left;         
+            }
+            .cart-list-items{
+                width: 100%;
+                border: 1px solid #ddd;
+                border-style: dotted;   
+                margin: 15px;
+                padding: 10px;
+            }
+            .cart-summary{
+                border-top: 1px solid black;
+                margin-top: 24px;
+                margin-bottom: 24px;
+                height: 105px;
+            }
+            .cart-list-summary {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;  
+                align-self: flex-start;
+                width: 50%;    
+                border: 1px solid #ddd;
+                margin: 15px;
+                padding: 10px;
+                border-style: dotted;          
+            }
+            .cart-list-summary-total {
+                width: 100%;
+                margin-bottom: 40px;
+                font-size: 18px;
+                font-weight: bold;
+            }
+            .cart-summary-lit-total-buttons {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                margin-top: 15px;
+            }
+            .cart-btn-buy {
+                order: 1;
+                background-color: #172C50;
+                border: none;
+                color: white;
+                width: 100%;
+                height: 40px;
+                font-size: 16px; 
+                cursor: pointer;  
+                width: 100%;  
+                margin-bottom: 20px;       
+            }
+            .cart-btn-empty {
+                order: 2;
+                background-color: #172C50;
+                border: none;
+                color: white;
+                width: 100%;
+                height: 40px;
+                font-size: 16px; 
+                cursor: pointer;  
+                width: 100%;
+            }
+            @media (min-width: 320px) and (max-width: 768px) {
+                .cart-list {
+                    width: 90%;
+                }                   
+                .cart-list-summary {
+                    width: 100%;
+                }
+            }    
+            @media (min-width: 768px) {  
+                .cart-list {
+                    justify-content: center;
+                } 
+                .cart-list-items {
+                    width: 60%;
+                }     
+                .cart-list-summary {
+                    width: 20%;
+                }                       
+            }  
+        </style>
+        <c-modal
+            txt-header="Purchasing process"
+            txt-body="[[txtModal]]"
+            show="[[showModal]]">
+            <div id="buttons">
+                <button type="button" class="modal-button" on-tap="_onTapBtnAccept">Accept</button>
+            </div>
+        </c-modal>
+        <section class="cart">
+            <template is="dom-if" if="[[!dataCart.length]]">
+                <div class="cart-header">
+                    Your Cart is empty
+                </div>               
+            </template>
+            <template is="dom-if" if="[[dataCart.length]]">
+                <div class="cart-header">
+                    Your Cart
+                </div>
+                <div class="cart-num-elements">
+                    [[dataCart.length]] elements
+                </div>
+                <br>
+                <div class="cart-list">
+                    <div class="cart-list-items">
+                        <template is="dom-repeat" items="{{dataCart}}">
+                            <c-cart-item data="{{item}}"></c-cart-item>
+                        </template>    
+                    </div>
+                    <div class="cart-list-summary">
+                        <div class="cart-list-summary-total">
+                            Total: [[total]]€
+                        </div>
+                        <button type="button" class="cart-btn-buy" on-tap="_onTapBtnBuy">
+                            Buy
+                        </button>   
+                        <button type="button" class="cart-btn-empty" on-tap="_onTapBtnEmpty">
+                            Empty
+                        </button>           
+                    </div>
+                </div>        
+            </template>                       
+        </section>
+    </template>
+    <script>
+        "use strict";
+        Polymer({        
+            is: "c-view-cart",
+            properties: {
+                isCreated: {
+                    type: Boolean,
+                    value: true
+                },
+                dataCart: Array,
+                total: Number,
+                showModal: {
+                    type: Boolean,
+                    value: false
+                },
+                txtModal: {
+                    type: String,
+                    computed: "_setTxtModal(dataCart.length)"
+                }
+            },
+            _setTxtModal: function (value) {
+                return "Congratulations! you have your " + value + " movies available to watch when you want";
+            },
+            _onTapBtnBuy: function (event) {
+                this.showModal = !this.showModal;
+            },
+            _onTapBtnAccept: function (event) {
+                this.showModal = !this.showModal;
+                this.fire("delete-all-cart");
+            },
+            _onTapBtnEmpty: function(event) {
+                this.fire("delete-all-cart");
+            },
+            ready: function () {
+                this.fire("page-ready");                    
+            }              
+        });
+    </script>
+</dom-module>

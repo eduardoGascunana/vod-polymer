@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>Videoclub</title>
+        <!-- <base href="/vod-polymer/"> -->
+        <base href="/">
+        <link rel="manifest" href="manifest.json">
+        <link rel="import" href="src/c-main.html" async>
+        <style>
+            html {
+              min-height: 100%;
+              position: relative;
+            }
+            body {
+                font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+                line-height: 1.42857143;
+                color: #333;
+                background-color: #fff;
+              	margin: 0 0 40px;
+            }
+        </style>
+    </head>
+    <body>
+        <c-main unresolved>Videoclub</c-main>
+        <script>
+            window.performance && performance.mark && performance.mark("index.html");
+            Polymer = {
+                lazyRegister: true, 
+                dom: "shadow"
+            };
+            window.Polymer = {
+                rootPath: "/vod-polymer/"
+            };
+            if ("serviceWorker" in navigator) {
+                navigator.serviceWorker.register("service-worker.js", {
+                    scope: Polymer.rootPath,
+                });
+            }
+            if (!("registerElement" in document) || !("import" in document.createElement("link")) || !("content" in document.createElement("template"))) {
+                var e = document.createElement("script");
+                e.src = "bower_components/webcomponentsjs/webcomponents-lite.min.js";
+                document.body.appendChild(e);
+            }
+        </script>
+    </body>
+</html>

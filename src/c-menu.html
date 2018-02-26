@@ -1,0 +1,86 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="c-menu-item.html">
+<dom-module id="c-menu">
+    <template>
+        <style>
+            ul {
+                list-style-type: none;
+                background-color: #f1f1f1;
+                padding-top: 15px;
+                padding-left: 0px;
+            } 
+            nav {
+                margin: 5px;
+            }
+            li {
+                display: list-item;
+                color: #000;
+                padding: 8px 16px;
+                text-decoration: none;
+            } 
+            li:hover {
+                background-color: grey;
+                color: white;
+            }
+            li.selected {
+                background-color: orange;
+            } 
+        </style>        
+        <aside>
+            <nav>
+                <ul>
+                    <template is="dom-repeat" items="[[categories]]" on-dom-change="_onDomChange">
+                        <li>
+                            <c-menu-item title="[[item.name]]" link="[[item.name]]"></c-menu-item>
+                        </li>
+                    </template>                    
+                </ul>
+            </nav>
+        </aside>
+    </template>
+    <script>
+        "use strict";
+        Polymer({
+            is: "c-menu",
+            properties: {
+                categories: {
+                    type: Array,
+                    notify: false,
+                    readOnly: false
+                },
+                category: {
+                    type: String,
+                    notify: true,
+                    readOnly: false
+                },
+                isDrawerOpened: {
+                    type: Boolean,
+                    value: false,
+                    notify: true,
+                    readOnly: false
+                },                                              
+            },  
+            observers: [
+                "_setFocus(categories, category)"
+            ],  
+            _setFocus: function (categories, category) {
+                var id = 0;
+                this.categories.forEach(function (item, index) {
+                    if(item.name === category) {
+                        id = index;
+                    }
+                }.bind(this));      
+                var selected = this.$$("ul .selected");
+                if (selected) {
+                    selected.classList.remove("selected")                        
+                }     
+                this.isDrawerOpened = false;         
+                this.$$("ul").children[id].classList.add("selected");
+            },               
+            _onDomChange: function (event) {
+                this._setFocus(this.categories, this.category);
+            }
+        });
+    </script>
+</dom-module>

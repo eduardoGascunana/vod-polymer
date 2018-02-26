@@ -1,0 +1,143 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="c-img.html">
+<dom-module id="c-view-home">
+    <template>
+        <style>
+            .home {
+                width: 100%
+            }
+            .home-list {
+                margin-top: 20px;
+                margin-bottom: 20px;
+                width: 100%;
+            }           
+            .home-list-covers {
+                margin-top: 20px;
+                margin-bottom: 20px;
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-items: flex-start;
+                align-content: flex-start;
+                width: 100%;
+            } 
+            .home-list-title {
+                font-size: 18px;
+                width: 100%;
+            }
+            .home-list-cover {
+                width: calc(16.5% - 10px);
+                margin: 5px;
+            }
+            .home-list-btn {
+                margin: 20px 5%;
+            }  
+            .btn-cart {
+                background-color: #172C50;
+                border: none;
+                color: white;
+                padding: 20px;
+                width: 100%;
+                height: 100%;
+                font-size: 15px;
+                cursor: pointer;
+            }          
+            @media (min-width: 767px) {
+                .home {
+                    width: 85%;
+                    margin: 0 auto;
+                }
+                .home-list-btn {
+                    margin: 20px 30%;
+                }
+            }
+        </style>
+        <div class="home">     
+            <div class="home-list">
+                <div class="home-list-title">
+                    Recommended
+                </div>  
+                <div class="home-list-covers"> 
+                    <template is="dom-repeat" items="[[recommendedList]]">
+                        <div class="home-list-cover">
+                            <c-img data="[[item]]"></c-img>
+                        </div>
+                    </template>
+                </div>
+            </div>
+            <div class="home-list">
+                <div class="home-list-title">
+                    Last additions
+                </div>   
+                <div class="home-list-covers"> 
+                    <template is="dom-repeat" items="[[lastAddedList]]">
+                        <div class="home-list-cover">
+                            <c-img data="[[item]]"></c-img>
+                        </div>
+                    </template>
+                </div>                
+            </div>
+            <div class="home-list-btn">
+                <button id="idBtnAccess" type="button" class="btn-cart">
+                    Access
+                </button>
+            </div>            
+        </div>
+    </template>
+    <script>
+        "use strict";
+        Polymer({        
+            is: "c-view-home",
+            properties: {
+                isCreated: {
+                    type: Boolean,
+                    value: true
+                },
+                categories: {
+                    type: Array,                      
+                    notify: false,
+                    readOnly: false                        
+                },                      
+                category: {
+                    type: String,
+                    notify: true,
+                    readOnly: false
+                },
+                serviceWorkerActivated: {
+                    type: Boolean,
+                    observer: "_serviceActive",
+                    notify: false,
+                    readOnly: false
+                },
+                coverList: {
+                    type: Array,
+                    notify: false,      
+                    readOnly: false,
+                    observer: "_setCategories"
+                },
+                recommendedList: Array,
+                lastAddedList: Array         
+            },
+            listeners: {
+                "idBtnAccess.tap": "_onTapBtnAccess"
+            },
+            _setCategories: function (list) {
+                this.recommendedList = list[0];
+                this.lastAddedList = list[1];
+            },
+            _serviceActive: function (newValue, oldValue) {
+                if (newValue && !oldValue) {
+                    this.category = "Home";
+                }
+            },
+            _onTapBtnAccess: function (event) {                  
+                window.history.pushState({}, null, this.rootPath + "list/" + this.categories[0].name);
+                window.dispatchEvent(new CustomEvent("location-changed"));                  
+            },
+            ready: function () {
+                this.fire("page-ready");                    
+            }                
+        });
+    </script>
+</dom-module>
