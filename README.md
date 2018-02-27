@@ -5,7 +5,7 @@ Simulates a VOD site distributed in:
 * Menu of genres and filtered list (depends on device resolution is possible add or remove each movie to the cart and modify it's rate)
 * Detail (it allows add or remove the movie to the cart and modify it's rate)
 * Cart (it concludes the purchase process or removes movies added to the cart)
-
+```bash
 ├── c-main  
 │   ├── c-model-cart  
 │   ├── c-model-categories  
@@ -24,6 +24,7 @@ Simulates a VOD site distributed in:
 │   ├── c-view-detail   
 │   │   ├── c-rating  
 │   ├── c-modal  
+```
 
 ### PRPL
 This PWA exercise is built following the pattern PRPL:
