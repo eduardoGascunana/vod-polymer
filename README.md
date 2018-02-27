@@ -6,24 +6,24 @@ Simulates a VOD site distributed in:
 * Detail (it allows add or remove the movie to the cart and modify it's rate)
 * Cart (it concludes the purchase process or removes movies added to the cart)
 
-├── c-main
-│   ├── c-model-cart
-│   ├── c-model-categories
-│   ├── c-model-data 
-│   ├── c-view-home
-│   │   ├── c-img
-│   ├── c-view-list
-│   │   ├── c-list
-│   │   │   ├── c-cover
-│   │   │   │   ├── c-rating
-│   │   ├── c-menu
-│   │   │   ├── c-menu-item
-│   ├── c-view-cart 
-│   │   ├── c-cart-item
-│   │   ├── c-modal
-│   ├── c-view-detail 
-│   │   ├── c-rating
-│   ├── c-modal
+├── c-main  
+│   ├── c-model-cart  
+│   ├── c-model-categories  
+│   ├── c-model-data  
+│   ├── c-view-home  
+│   │   ├── c-img  
+│   ├── c-view-list  
+│   │   ├── c-list  
+│   │   │   ├── c-cover  
+│   │   │   │   ├── c-rating  
+│   │   ├── c-menu  
+│   │   │   ├── c-menu-item  
+│   ├── c-view-cart  
+│   │   ├── c-cart-item  
+│   │   ├── c-modal  
+│   ├── c-view-detail   
+│   │   ├── c-rating  
+│   ├── c-modal  
 
 ### PRPL
 This PWA exercise is built following the pattern PRPL:
